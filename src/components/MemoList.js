@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Icon } from "./Icon";
 
 export const MemoList = () => {
   //TODO テストデータ
   const memoList = [
     { id: 1, title: "買い物リスト1", date: "2021年12月31日" },
     { id: 2, title: "買い物リスト2", date: "2021年12月31日" },
-    { id: 2, title: "買い物リスト3", date: "2021年12月31日" },
+    { id: 3, title: "買い物リスト3", date: "2021年12月31日" },
   ];
 
   return (
@@ -18,7 +18,7 @@ export const MemoList = () => {
             <Text style={styles.memoListItemDate}>{todo.date}</Text>
           </View>
           <View>
-            <Feather name="x" size={16} color="#B0B0B0" />
+            <Icon name="delete" size={24} color="#B0B0B0" />
           </View>
         </View>
       ))}
