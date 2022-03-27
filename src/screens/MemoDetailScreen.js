@@ -15,7 +15,7 @@ export const MemoDetailScreen = () => {
           買い物リスト本文。私は時分やはりその解家についてのの時が得るです。
         </Text>
       </ScrollView>
-      <CircleButton style={{ top: 160, bottom: "auto" }}>+</CircleButton>
+      <CircleButton style={{ top: 160, bottom: "auto" }} name="edit-2" />
     </View>
   );
 };
