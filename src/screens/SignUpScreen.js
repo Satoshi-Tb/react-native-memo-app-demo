@@ -5,21 +5,35 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { AppBar } from "../components/AppBar";
 import { Button } from "../components/Button";
 
-export const SignUpScreen = () => {
+export const SignUpScreen = (props) => {
+  const { navigation } = props;
   return (
     <View style={styles.container}>
-      <AppBar />
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Sign Up</Text>
         <TextInput value="Email" style={styles.input} />
         <TextInput value="Password" style={styles.input} />
-        <Button label="Submit" />
+        <Button
+          label="Submit"
+          onPress={() => {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "MemoList" }],
+            });
+          }}
+        />
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already registered?</Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "LogIn" }],
+              });
+            }}
+          >
             <Text style={styles.footerLink}>Log In.</Text>
           </TouchableOpacity>
         </View>

@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Icon } from "./Icon";
+import { useNavigation } from "@react-navigation/native";
 
 export const MemoList = () => {
   //TODO テストデータ
@@ -9,18 +10,26 @@ export const MemoList = () => {
     { id: 3, title: "買い物リスト3", date: "2021年12月31日" },
   ];
 
+  const navigation = useNavigation();
+
   return (
     <View>
       {memoList.map((todo) => (
-        <View style={styles.memoListItem} key={todo.id}>
+        <TouchableOpacity
+          style={styles.memoListItem}
+          key={todo.id}
+          onPress={() => {
+            navigation.navigate("MemoDetail");
+          }}
+        >
           <View>
             <Text style={styles.memoListItemTitle}>{todo.title}</Text>
             <Text style={styles.memoListItemDate}>{todo.date}</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity style={styles.memoDelete}>
             <Icon name="delete" size={24} color="#B0B0B0" />
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
@@ -45,5 +54,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     color: "#848484",
+  },
+  memoDelete: {
+    padding: 8,
   },
 });
