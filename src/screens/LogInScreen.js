@@ -6,30 +6,41 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { auth } from "../lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 
 export const LogInScreen = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { navigation } = props;
 
-  const handlePress = () => {
-    (async () => {
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
+  const handlePress = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "MemoList" }],
+      });
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "ログイン処理でエラーが発生しました");
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
         navigation.reset({
           index: 0,
           routes: [{ name: "MemoList" }],
         });
-      } catch (error) {
-        console.log(error);
-        Alert.alert("Error", "ログイン処理でエラーが発生しました");
       }
-    })();
-  };
+    });
+
+    return unsubscribe();
+  }, []);
 
   return (
     <View style={styles.container}>

@@ -16,24 +16,22 @@ export const SignUpScreen = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handlePress = () => {
-    (async () => {
-      try {
-        const { user } = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        console.log(user);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "MemoList" }],
-        });
-      } catch (error) {
-        console.log(error);
-        Alert.alert("Error", "ユーザー登録でエラーが発生しました");
-      }
-    })();
+  const handlePress = async () => {
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(user);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "MemoList" }],
+      });
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "ユーザー登録でエラーが発生しました");
+    }
   };
 
   return (
