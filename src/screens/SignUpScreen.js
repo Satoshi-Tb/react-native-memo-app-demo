@@ -4,14 +4,37 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import { Button } from "../components/Button";
+import { auth } from "../lib/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export const SignUpScreen = (props) => {
   const { navigation } = props;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handlePress = () => {
+    (async () => {
+      try {
+        const { user } = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        console.log(user);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "MemoList" }],
+        });
+      } catch (error) {
+        console.log(error);
+        Alert.alert("Error", "ユーザー登録でエラーが発生しました");
+      }
+    })();
+  };
 
   return (
     <View style={styles.container}>
@@ -39,15 +62,7 @@ export const SignUpScreen = (props) => {
           secureTextEntry={true}
           textContentType="password"
         />
-        <Button
-          label="Submit"
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "MemoList" }],
-            });
-          }}
-        />
+        <Button label="Submit" onPress={handlePress} />
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already registered?</Text>
           <TouchableOpacity
