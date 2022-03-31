@@ -1,38 +1,45 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { Icon } from "./Icon";
 import { useNavigation } from "@react-navigation/native";
 import { shape, string, instanceOf, arrayOf } from "prop-types";
 
 export const MemoList = (props) => {
   const { memoList } = props;
-  //TODO テストデータ
-  // const memoList = [
-  //   { id: 1, title: "買い物リスト1", date: "2021年12月31日" },
-  //   { id: 2, title: "買い物リスト2", date: "2021年12月31日" },
-  //   { id: 3, title: "買い物リスト3", date: "2021年12月31日" },
-  // ];
-
   const navigation = useNavigation();
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity
+        style={styles.memoListItem}
+        onPress={() => {
+          navigation.navigate("MemoDetail");
+        }}
+      >
+        <View>
+          <Text style={styles.memoListItemTitle} numberOfLines={1}>
+            {item.body}
+          </Text>
+          <Text style={styles.memoListItemDate}>{String(item.date)}</Text>
+        </View>
+        <TouchableOpacity style={styles.memoDelete}>
+          <Icon name="delete" size={24} color="#B0B0B0" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <View>
-      {memoList.map((memo) => (
-        <TouchableOpacity
-          style={styles.memoListItem}
-          key={memo.id}
-          onPress={() => {
-            navigation.navigate("MemoDetail");
-          }}
-        >
-          <View>
-            <Text style={styles.memoListItemTitle}>{memo.body}</Text>
-            <Text style={styles.memoListItemDate}>{String(memo.date)}</Text>
-          </View>
-          <TouchableOpacity style={styles.memoDelete}>
-            <Icon name="delete" size={24} color="#B0B0B0" />
-          </TouchableOpacity>
-        </TouchableOpacity>
-      ))}
+    <View style={styles.continer}>
+      <FlatList
+        data={memoList}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
     </View>
   );
 };
@@ -60,13 +67,15 @@ const styles = StyleSheet.create({
   memoDelete: {
     padding: 8,
   },
+  continer: {
+    flex: 1,
+  },
 });
 
 MemoList.propTypes = {
   memoList: arrayOf(
     shape({
       id: string,
-      title: string,
       body: string,
       date: instanceOf(Date),
     })

@@ -32,7 +32,6 @@ export const MemoListScreen = (props) => {
           snapshot.forEach((doc) => {
             const data = doc.data();
             items.push({
-              title: "",
               body: data.bodyText,
               date: data.updatedAt.toDate(),
               id: doc.id,
