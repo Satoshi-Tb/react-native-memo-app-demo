@@ -21,7 +21,7 @@ export const MemoCreateScreen = (props) => {
     }
     try {
       const { currentUser } = auth;
-      const ref = await collection(db, `users/${currentUser.uid}/memos`);
+      const ref = collection(db, `users/${currentUser.uid}/memos`);
       const docRef = await addDoc(ref, {
         bodyText: memo,
         updatedAt: new Date(),
