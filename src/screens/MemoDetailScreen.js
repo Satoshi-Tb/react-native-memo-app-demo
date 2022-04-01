@@ -1,18 +1,54 @@
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { useState, useEffect } from "react";
+import { string, shape } from "prop-types";
+import { StyleSheet, Text, View, ScrollView, Alert } from "react-native";
 import { CircleButton } from "../components/CircleButton";
+import { auth, db } from "../lib/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import { dateToString } from "../utils";
 
 export const MemoDetailScreen = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
+  const { id } = route.params;
+  const [memo, setMemo] = useState(null);
+
+  useEffect(() => {
+    let unsubscribe = () => {};
+    try {
+      console.log("memo list fetch start");
+      const { currentUser } = auth;
+      const ref = doc(db, `users/${currentUser.uid}/memos/${id}`);
+      unsubscribe = onSnapshot(
+        ref,
+        (doc) => {
+          const data = doc.data();
+          setMemo({
+            body: data.bodyText,
+            date: data.updatedAt.toDate(),
+            id: doc.id,
+          });
+        },
+        (error) => {
+          console.log(error);
+          Alert.alert("Error", "メモ取得エラー");
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "メモ取得エラー");
+    }
+    return unsubscribe;
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.memoHeader}>
-        <Text style={styles.memoTitle}>買い物リスト</Text>
-        <Text style={styles.memoDate}>2020年12月24日 10:00</Text>
+        <Text style={styles.memoTitle} numberOfLines={1}>
+          {memo?.body ?? ""}
+        </Text>
+        <Text style={styles.memoDate}>{dateToString(memo?.date)}</Text>
       </View>
       <ScrollView style={styles.memoBody}>
-        <Text style={styles.memoText}>
-          買い物リスト本文。私は時分やはりその解家についてのの時が得るです。
-        </Text>
+        <Text style={styles.memoText}>{memo?.body ?? ""}</Text>
       </ScrollView>
       <CircleButton
         style={{ top: 60, bottom: "auto" }}
@@ -58,3 +94,7 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
 });
+
+MemoDetailScreen.propTypes = {
+  route: shape({ params: shape({ id: string }) }).isRequired,
+};
