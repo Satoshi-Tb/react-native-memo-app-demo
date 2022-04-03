@@ -3,23 +3,75 @@ import {
   View,
   TextInput,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
+import { useState, useEffect } from "react";
 import { CircleButton } from "../components/CircleButton";
+import { auth, db } from "../lib/firebase";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { shape, string } from "prop-types";
 
 export const MemoEditScreen = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
+  const { id } = route.params;
+  const [memo, setMemo] = useState("");
+
+  const handlePress = async () => {
+    const { currentUser } = auth;
+    const ref = doc(db, `users/${currentUser.uid}/memos/${id}`);
+    try {
+      await updateDoc(ref, {
+        bodyText: memo.body,
+        updatedAt: new Date(),
+      });
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "メモ更新エラー");
+    }
+  };
+
+  useEffect(() => {
+    let unsubscribe = () => {};
+    try {
+      console.log("memo item fetch start. id:" + id);
+      const { currentUser } = auth;
+      const ref = doc(db, `users/${currentUser.uid}/memos/${id}`);
+      unsubscribe = onSnapshot(
+        ref,
+        (doc) => {
+          const data = doc.data();
+          setMemo({
+            body: data.bodyText,
+            date: data.updatedAt.toDate(),
+            id: doc.id,
+          });
+        },
+        (error) => {
+          console.log(error);
+          Alert.alert("Error", "メモ取得エラー");
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "メモ取得エラー");
+    }
+    return unsubscribe;
+  }, []);
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
       <View style={styles.inputContainer}>
-        <TextInput value="買い物リスト" multiline={true} style={styles.input} />
+        <TextInput
+          value={memo?.body ?? ""}
+          multiline={true}
+          style={styles.input}
+          onChangeText={(text) => setMemo({ ...memo, body: text })}
+          autoFocus={true}
+          keyboardType="ascii-capable"
+        />
       </View>
-      <CircleButton
-        name="check"
-        color="white"
-        onPress={() => {
-          navigation.goBack();
-        }}
-      />
+      <CircleButton name="check" color="white" onPress={handlePress} />
     </KeyboardAvoidingView>
   );
 };
@@ -40,3 +92,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 });
+
+MemoEditScreen.propTypes = {
+  route: shape({ params: shape({ id: string }) }).isRequired,
+};
