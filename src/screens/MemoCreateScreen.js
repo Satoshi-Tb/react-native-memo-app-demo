@@ -8,17 +8,20 @@ import {
   Alert,
 } from "react-native";
 import { CircleButton } from "../components/CircleButton";
+import { Loading } from "../components/Loading";
 import { auth, db } from "../lib/firebase";
 
 export const MemoCreateScreen = (props) => {
   const { navigation } = props;
   const [memo, setMemo] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handlePress = async () => {
     if (memo === "") {
       Alert.alert("Warning", "メモ本文を入力してください。");
       return;
     }
+    setLoading(true);
     try {
       const { currentUser } = auth;
       const ref = collection(db, `users/${currentUser.uid}/memos`);
@@ -30,12 +33,14 @@ export const MemoCreateScreen = (props) => {
       navigation.goBack();
     } catch (error) {
       console.log(error);
+      setLoading(false);
       Alert.alert("Error", "メモ登録に失敗しました");
     }
   };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
+      <Loading isLoading={loading} />
       <View style={styles.inputContainer}>
         <TextInput
           value={memo}

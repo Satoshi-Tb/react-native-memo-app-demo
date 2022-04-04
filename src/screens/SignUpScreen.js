@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Button } from "../components/Button";
+import { Loading } from "../components/Loading";
 import { auth } from "../lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
@@ -15,8 +16,10 @@ export const SignUpScreen = (props) => {
   const { navigation } = props;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handlePress = async () => {
+    setLoading(true);
     try {
       const { user } = await createUserWithEmailAndPassword(
         auth,
@@ -30,12 +33,14 @@ export const SignUpScreen = (props) => {
       });
     } catch (error) {
       console.log(error);
+      setLoading(false);
       Alert.alert("Error", "ユーザー登録でエラーが発生しました");
     }
   };
 
   return (
     <View style={styles.container}>
+      <Loading isLoading={loading} />
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Sign Up</Text>
         <TextInput

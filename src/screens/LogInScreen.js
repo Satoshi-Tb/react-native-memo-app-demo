@@ -10,13 +10,16 @@ import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { auth } from "../lib/firebase";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { Loading } from "../components/Loading";
 
 export const LogInScreen = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { navigation } = props;
 
   const handlePress = async () => {
+    setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigation.reset({
@@ -25,17 +28,21 @@ export const LogInScreen = (props) => {
       });
     } catch (error) {
       console.log(error);
+      setLoading(false);
       Alert.alert("Error", "ログイン処理でエラーが発生しました");
     }
   };
 
   useEffect(() => {
+    setLoading(true);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         navigation.reset({
           index: 0,
           routes: [{ name: "MemoList" }],
         });
+      } else {
+        setLoading(false);
       }
     });
 
@@ -44,6 +51,7 @@ export const LogInScreen = (props) => {
 
   return (
     <View style={styles.container}>
+      <Loading isLoading={loading} />
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Log In</Text>
         <TextInput

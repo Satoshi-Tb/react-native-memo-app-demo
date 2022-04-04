@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { CircleButton } from "../components/CircleButton";
+import { Loading } from "../components/Loading";
 import { auth, db } from "../lib/firebase";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { shape, string } from "prop-types";
@@ -15,8 +16,10 @@ export const MemoEditScreen = (props) => {
   const { navigation, route } = props;
   const { id } = route.params;
   const [memo, setMemo] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handlePress = async () => {
+    setLoading(true);
     const { currentUser } = auth;
     const ref = doc(db, `users/${currentUser.uid}/memos/${id}`);
     try {
@@ -27,11 +30,13 @@ export const MemoEditScreen = (props) => {
       navigation.goBack();
     } catch (error) {
       console.log(error);
+      setLoading(false);
       Alert.alert("Error", "メモ更新エラー");
     }
   };
 
   useEffect(() => {
+    setLoading(true);
     let unsubscribe = () => {};
     try {
       console.log("memo item fetch start. id:" + id);
@@ -46,14 +51,17 @@ export const MemoEditScreen = (props) => {
             date: data.updatedAt.toDate(),
             id: doc.id,
           });
+          setLoading(false);
         },
         (error) => {
           console.log(error);
+          setLoading(false);
           Alert.alert("Error", "メモ取得エラー");
         }
       );
     } catch (error) {
       console.log(error);
+      setLoading(false);
       Alert.alert("Error", "メモ取得エラー");
     }
     return unsubscribe;
@@ -61,6 +69,7 @@ export const MemoEditScreen = (props) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height">
+      <Loading isLoading={loading} />
       <View style={styles.inputContainer}>
         <TextInput
           value={memo?.body ?? ""}

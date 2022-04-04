@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { string, shape } from "prop-types";
 import { StyleSheet, Text, View, ScrollView, Alert } from "react-native";
 import { CircleButton } from "../components/CircleButton";
+import { Loading } from "../components/Loading";
 import { auth, db } from "../lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import { dateToString } from "../utils";
@@ -10,8 +11,10 @@ export const MemoDetailScreen = (props) => {
   const { navigation, route } = props;
   const { id } = route.params;
   const [memo, setMemo] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     let unsubscribe = () => {};
     try {
       console.log("memo list fetch start");
@@ -26,14 +29,17 @@ export const MemoDetailScreen = (props) => {
             date: data.updatedAt.toDate(),
             id: doc.id,
           });
+          setLoading(false);
         },
         (error) => {
           console.log(error);
+          setLoading(false);
           Alert.alert("Error", "メモ取得エラー");
         }
       );
     } catch (error) {
       console.log(error);
+      setLoading(false);
       Alert.alert("Error", "メモ取得エラー");
     }
     return unsubscribe;
@@ -41,6 +47,7 @@ export const MemoDetailScreen = (props) => {
 
   return (
     <View style={styles.container}>
+      <Loading isLoading={loading} />
       <View style={styles.memoHeader}>
         <Text style={styles.memoTitle} numberOfLines={1}>
           {memo?.body ?? ""}

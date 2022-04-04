@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 
 export const LogOutButton = () => {
   const navigation = useNavigation();
+  //TODO メモリスト画面からログアウト後、memo取得動作が実行されfirebaseのパーミッションエラーとなる
   const handlePress = async () => {
     try {
       await signOut(auth);
