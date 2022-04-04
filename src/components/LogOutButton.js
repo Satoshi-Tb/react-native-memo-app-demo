@@ -2,6 +2,7 @@ import { TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
 import { auth } from "../lib/firebase";
 import { signOut } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
+import { translateErrors } from "../utils";
 
 export const LogOutButton = () => {
   const navigation = useNavigation();
@@ -15,7 +16,8 @@ export const LogOutButton = () => {
       });
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "ログアウトに失敗しました");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
   };
 

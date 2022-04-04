@@ -7,6 +7,7 @@ import { MemoList } from "../components/MemoList";
 import { auth, db } from "../lib/firebase";
 import { Button } from "../components/Button";
 import { Loading } from "../components/Loading";
+import { translateErrors } from "../utils";
 
 export const MemoListScreen = (props) => {
   const { navigation } = props;
@@ -47,13 +48,15 @@ export const MemoListScreen = (props) => {
         (error) => {
           console.log(error);
           setLoading(false);
-          Alert.alert("Error", "メモリスト取得エラー");
+          const err = translateErrors(error.code);
+          Alert.alert(err.title, err.description);
         }
       );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      Alert.alert("Error", "メモリスト取得エラー");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
     return unsubscribe;
   }, []);

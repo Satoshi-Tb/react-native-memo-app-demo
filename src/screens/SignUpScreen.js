@@ -11,6 +11,7 @@ import { Button } from "../components/Button";
 import { Loading } from "../components/Loading";
 import { auth } from "../lib/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { translateErrors } from "../utils";
 
 export const SignUpScreen = (props) => {
   const { navigation } = props;
@@ -34,7 +35,8 @@ export const SignUpScreen = (props) => {
     } catch (error) {
       console.log(error);
       setLoading(false);
-      Alert.alert("Error", "ユーザー登録でエラーが発生しました");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
   };
 

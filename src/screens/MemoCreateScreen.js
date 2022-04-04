@@ -10,6 +10,7 @@ import {
 import { CircleButton } from "../components/CircleButton";
 import { Loading } from "../components/Loading";
 import { auth, db } from "../lib/firebase";
+import { translateErrors } from "../utils";
 
 export const MemoCreateScreen = (props) => {
   const { navigation } = props;
@@ -34,7 +35,8 @@ export const MemoCreateScreen = (props) => {
     } catch (error) {
       console.log(error);
       setLoading(false);
-      Alert.alert("Error", "メモ登録に失敗しました");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
   };
 

@@ -9,6 +9,7 @@ import {
 import { useState, useEffect } from "react";
 import { Button } from "../components/Button";
 import { auth } from "../lib/firebase";
+import { translateErrors } from "../utils";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { Loading } from "../components/Loading";
 
@@ -29,7 +30,8 @@ export const LogInScreen = (props) => {
     } catch (error) {
       console.log(error);
       setLoading(false);
-      Alert.alert("Error", "ログイン処理でエラーが発生しました");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
   };
 

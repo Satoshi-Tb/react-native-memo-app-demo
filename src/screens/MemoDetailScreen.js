@@ -5,7 +5,7 @@ import { CircleButton } from "../components/CircleButton";
 import { Loading } from "../components/Loading";
 import { auth, db } from "../lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
-import { dateToString } from "../utils";
+import { dateToString, translateErrors } from "../utils";
 
 export const MemoDetailScreen = (props) => {
   const { navigation, route } = props;
@@ -34,13 +34,15 @@ export const MemoDetailScreen = (props) => {
         (error) => {
           console.log(error);
           setLoading(false);
-          Alert.alert("Error", "メモ取得エラー");
+          const err = translateErrors(error.code);
+          Alert.alert(err.title, err.description);
         }
       );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      Alert.alert("Error", "メモ取得エラー");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
     return unsubscribe;
   }, []);

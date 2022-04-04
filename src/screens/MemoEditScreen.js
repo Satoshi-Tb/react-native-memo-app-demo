@@ -11,6 +11,7 @@ import { Loading } from "../components/Loading";
 import { auth, db } from "../lib/firebase";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { shape, string } from "prop-types";
+import { translateErrors } from "../utils";
 
 export const MemoEditScreen = (props) => {
   const { navigation, route } = props;
@@ -31,7 +32,8 @@ export const MemoEditScreen = (props) => {
     } catch (error) {
       console.log(error);
       setLoading(false);
-      Alert.alert("Error", "メモ更新エラー");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
   };
 
@@ -56,13 +58,15 @@ export const MemoEditScreen = (props) => {
         (error) => {
           console.log(error);
           setLoading(false);
-          Alert.alert("Error", "メモ取得エラー");
+          const err = translateErrors(error.code);
+          Alert.alert(err.title, err.description);
         }
       );
     } catch (error) {
       console.log(error);
       setLoading(false);
-      Alert.alert("Error", "メモ取得エラー");
+      const err = translateErrors(error.code);
+      Alert.alert(err.title, err.description);
     }
     return unsubscribe;
   }, []);

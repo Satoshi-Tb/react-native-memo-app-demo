@@ -10,7 +10,7 @@ import {
 import { Icon } from "./Icon";
 import { useNavigation } from "@react-navigation/native";
 import { shape, string, instanceOf, arrayOf } from "prop-types";
-import { dateToString } from "../utils";
+import { dateToString, translateErrors } from "../utils";
 import { Loading } from "./Loading";
 import { auth, db } from "../lib/firebase";
 import { deleteDoc, doc } from "firebase/firestore";
@@ -38,7 +38,8 @@ export const MemoList = (props) => {
               await deleteDoc(ref);
             } catch (error) {
               console.log(error);
-              Alert("Error", "削除に失敗しました");
+              const err = translateErrors(error.code);
+              Alert.alert(err.title, err.description);
             } finally {
               setLoading(false);
             }
