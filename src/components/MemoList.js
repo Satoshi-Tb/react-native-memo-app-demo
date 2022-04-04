@@ -1,18 +1,53 @@
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from "react-native";
 import { Icon } from "./Icon";
 import { useNavigation } from "@react-navigation/native";
 import { shape, string, instanceOf, arrayOf } from "prop-types";
 import { dateToString } from "../utils";
+import { Loading } from "./Loading";
+import { auth, db } from "../lib/firebase";
+import { deleteDoc, doc } from "firebase/firestore";
 
 export const MemoList = (props) => {
   const { memoList } = props;
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+
+  const handlePress = (id) => {
+    const { currentUser } = auth;
+    if (currentUser) {
+      Alert.alert("削除します", "よろしいですか？", [
+        {
+          text: "キャンセル",
+          onPress: () => {},
+        },
+        {
+          text: "削除する",
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              const ref = doc(db, `users/${currentUser.uid}/memos/${id}`);
+              await deleteDoc(ref);
+            } catch (error) {
+              console.log(error);
+              Alert("Error", "削除に失敗しました");
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]);
+    }
+  };
+
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
@@ -27,7 +62,12 @@ export const MemoList = (props) => {
           </Text>
           <Text style={styles.memoListItemDate}>{dateToString(item.date)}</Text>
         </View>
-        <TouchableOpacity style={styles.memoDelete}>
+        <TouchableOpacity
+          style={styles.memoDelete}
+          onPress={() => {
+            handlePress(item.id);
+          }}
+        >
           <Icon name="delete" size={24} color="#B0B0B0" />
         </TouchableOpacity>
       </TouchableOpacity>
@@ -36,6 +76,7 @@ export const MemoList = (props) => {
 
   return (
     <View style={styles.continer}>
+      <Loading isLoading={loading} />
       <FlatList
         data={memoList}
         renderItem={renderItem}
