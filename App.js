@@ -1,3 +1,4 @@
+import { LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   createStackNavigator,
@@ -11,6 +12,8 @@ import { MemoListScreen } from "./src/screens/MemoListScreen";
 import { SignUpScreen } from "./src/screens/SignUpScreen";
 
 const Stack = createStackNavigator();
+// チェック不要警告の表示を抑止する
+LogBox.ignoreLogs(["Setting a timer"]);
 
 export default function App() {
   return (
