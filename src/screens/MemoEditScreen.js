@@ -41,7 +41,6 @@ export const MemoEditScreen = (props) => {
     setLoading(true);
     let unsubscribe = () => {};
     try {
-      console.log("memo item fetch start. id:" + id);
       const { currentUser } = auth;
       const ref = doc(db, `users/${currentUser.uid}/memos/${id}`);
       unsubscribe = onSnapshot(

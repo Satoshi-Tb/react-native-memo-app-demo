@@ -9,11 +9,13 @@ export const LogOutButton = () => {
   //TODO メモリスト画面からログアウト後、memo取得動作が実行されfirebaseのパーミッションエラーとなる
   const handlePress = async () => {
     try {
+      console.log("sign out start");
       await signOut(auth);
       navigation.reset({
         index: 0,
         routes: [{ name: "LogIn" }],
       });
+      console.log("sign out finish");
     } catch (error) {
       console.log(error);
       const err = translateErrors(error.code);

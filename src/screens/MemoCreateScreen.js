@@ -26,11 +26,10 @@ export const MemoCreateScreen = (props) => {
     try {
       const { currentUser } = auth;
       const ref = collection(db, `users/${currentUser.uid}/memos`);
-      const docRef = await addDoc(ref, {
+      await addDoc(ref, {
         bodyText: memo,
         updatedAt: new Date(),
       });
-      console.log("Created: " + docRef.id);
       navigation.goBack();
     } catch (error) {
       console.log(error);

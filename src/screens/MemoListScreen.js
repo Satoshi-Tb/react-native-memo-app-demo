@@ -14,25 +14,22 @@ export const MemoListScreen = (props) => {
   const [memoList, setMemoList] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  //useEffectブロックの実行は、コードの上から順に実施されている
+  //Firestoreからメモ一覧取得
   useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <LogOutButton />,
-    });
-  }, []);
-
-  //TODO useEffectブロックが複数の場合、実行順序は？
-  useEffect(() => {
+    console.log("useEffect: fetch memo list");
     let unsubscribe = () => {};
     setLoading(true);
     try {
-      console.log("memo list fetch start");
       const { currentUser } = auth;
+      console.log("uid: " + currentUser.uid);
       const ref = collection(db, `users/${currentUser.uid}/memos`);
       const q = query(ref, orderBy("updatedAt", "desc"));
 
       unsubscribe = onSnapshot(
         q,
         (snapshot) => {
+          console.log("onSnapshot start");
           const items = [];
           snapshot.forEach((doc) => {
             const data = doc.data();
@@ -49,7 +46,7 @@ export const MemoListScreen = (props) => {
           console.log(error);
           setLoading(false);
           const err = translateErrors(error.code);
-          Alert.alert(err.title, err.description);
+          Alert.alert(err.title, "メモ一覧取得に失敗しました");
         }
       );
     } catch (error) {
@@ -59,6 +56,14 @@ export const MemoListScreen = (props) => {
       Alert.alert(err.title, err.description);
     }
     return unsubscribe;
+  }, []);
+
+  //ナビゲーションヘッダにログアウトボタン追加
+  useEffect(() => {
+    console.log("useEffect: add LogOutButton");
+    navigation.setOptions({
+      headerRight: () => <LogOutButton />,
+    });
   }, []);
 
   // Loadingコンポーネントを配置するのは、メモが0件の場合
